@@ -1,0 +1,12 @@
+States:
+
+Validation => OrderRejected
+           ||
+           => OrderAccepted ==> BeginCooking => FinishCooking => OrderCompleted
+
+State Values: 
+OrderId
+CustomerId
+ItemList
+
+Validation state = wait for kitchen to confirm or not order
