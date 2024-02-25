@@ -2,7 +2,7 @@ using System.Reflection;
 using MassTransit;
 using PizzaMaui.API.Orders.Kitchen.Consumers;
 using PizzaMaui.API.Orders.Kitchen.StateMachines;
-using PizzaMauiApp.API.Shared.Environment;
+using PizzaMauiApp.API.Core.Environment;
 
 var builder = WebApplication.CreateBuilder(args);
 
