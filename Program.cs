@@ -1,5 +1,7 @@
 using System.Reflection;
 using MassTransit;
+using PizzaMaui.API.Orders.Kitchen.Consumers;
+using PizzaMaui.API.Orders.Kitchen.StateMachines;
 using PizzaMauiApp.API.Shared.Environment;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -32,7 +34,32 @@ builder.Services.AddMassTransit(x =>
             hostconfig.Username(rabbitMqConnectionConfig.Username);
             hostconfig.Password(rabbitMqConnectionConfig.Password);
         });
-        cfg.ConfigureEndpoints(context);
+        //cfg.ConfigureEndpoints(context);
+        cfg.ReceiveEndpoint("kitchen-order-created", z =>
+        {
+            z.BindDeadLetterQueue("kitchen-order-created-dead");
+            z.ConfigureConsumer<KitchenOrderCreatedConsumer>(context);
+        });
+        cfg.ReceiveEndpoint("kitchen-order-accepted", z =>
+        {
+            z.BindDeadLetterQueue("kitchen-order-accepted-dead");
+            z.ConfigureConsumer<KitchenOrderAcceptedConsumer>(context);
+        });
+        cfg.ReceiveEndpoint("kitchen-order-rejected", z =>
+        {
+            z.BindDeadLetterQueue("kitchen-order-rejected-dead");
+            z.ConfigureConsumer<KitchenOrderRejectedConsumer>(context);
+        });
+        cfg.ReceiveEndpoint("kitchen-order-is-cooking", z =>
+        {
+            z.BindDeadLetterQueue("kitchen-order-is-cooking-dead");
+            z.ConfigureConsumer<KitchenOrderIsCookingConsumer>(context);
+        });
+        cfg.ReceiveEndpoint("saga-order-queue", z =>
+        {
+            z.BindDeadLetterQueue("saga-order-queue-dead");
+            z.ConfigureSaga<KitchenCookerState>(context);
+        });
     }); 
 });
 

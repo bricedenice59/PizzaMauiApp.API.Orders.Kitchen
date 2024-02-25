@@ -1,5 +1,6 @@
 using MassTransit;
 using PizzaMaui.API.Orders.Kitchen.Contracts;
+using PizzaMauiApp.RabbitMq.Messages;
 
 namespace PizzaMaui.API.Orders.Kitchen.StateMachines
 {
@@ -21,8 +22,20 @@ namespace PizzaMaui.API.Orders.Kitchen.StateMachines
                     {
                         context.Saga.UserId = context.Message.UserId;
                         context.Saga.OrderId = context.Message.OrderId;
+                        context.Saga.Items = context.Message.Items;
+                        context.Saga.CreatedAt = context.Message.CreatedAt;
                         
                         Console.WriteLine($":( Order {context.Saga.OrderId} has been canceled...");
+                        
+                        context.Publish<IKitchenToOrderAPIMessage>(
+                            new
+                            {
+                                OrderId = context.Message.OrderId,
+                                UserId = context.Message.UserId,
+                                CreatedAt = context.Message.CreatedAt,
+                                IsAccepted = false,
+                                Items = context.Message.Items
+                        });
                     })
                     .Finalize()
             );
@@ -34,8 +47,9 @@ namespace PizzaMaui.API.Orders.Kitchen.StateMachines
                         context.Saga.UserId = context.Message.UserId;
                         context.Saga.OrderId = context.Message.OrderId;
                         context.Saga.Items = context.Message.Items;
+                        context.Saga.CreatedAt = context.Message.CreatedAt;
                         
-                        Console.WriteLine($"Order arrived {context.Saga.OrderId} in kitchen...");
+                        Console.WriteLine($"Order {context.Saga.OrderId} is in kitchen...");
                         
                         var beginEvent = new KitchenBeginCookingEvent()
                         {
@@ -50,6 +64,16 @@ namespace PizzaMaui.API.Orders.Kitchen.StateMachines
                 When(KitchenBeginCookingEvent)
                     .Then(context =>
                     {
+                        context.Publish<IKitchenToOrderAPIMessage>(
+                            new
+                            {
+                                OrderId = context.Saga.OrderId,
+                                UserId = context.Saga.UserId,
+                                CreatedAt = context.Saga.CreatedAt,
+                                IsAccepted = true,
+                                Items = context.Saga.Items
+                            });
+                        
                         Console.WriteLine($"Order {context.Saga.OrderId} is being cooked...");
                         var cookOrder = new CookOrder { CorrelationId = context.Saga.CorrelationId };
                         context.Publish(cookOrder); 

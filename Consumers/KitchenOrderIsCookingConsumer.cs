@@ -3,7 +3,7 @@ using PizzaMaui.API.Orders.Kitchen.Contracts;
 
 namespace PizzaMaui.API.Orders.Kitchen.Consumers
 {
-    public class OrderIsCookingConsumer : IConsumer<CookOrder>
+    public class KitchenOrderIsCookingConsumer : IConsumer<CookOrder>
     {
         public async Task Consume(ConsumeContext<CookOrder> context)
         {

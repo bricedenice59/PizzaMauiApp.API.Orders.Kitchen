@@ -4,7 +4,7 @@ using PizzaMauiApp.RabbitMq.Messages;
 
 namespace PizzaMaui.API.Orders.Kitchen.Consumers
 {
-    public class OrderAcceptedConsumer : IConsumer<IKitchenOrderAccepted>
+    public class KitchenOrderAcceptedConsumer : IConsumer<IKitchenOrderAccepted>
     {
         public async Task Consume(ConsumeContext<IKitchenOrderAccepted> context)
         {
@@ -14,7 +14,8 @@ namespace PizzaMaui.API.Orders.Kitchen.Consumers
                 CorrelationId = Guid.NewGuid(),
                 Items = context.Message.Items,
                 OrderId = context.Message.OrderId,
-                UserId = context.Message.UserId
+                UserId = context.Message.UserId,
+                CreatedAt = context.Message.CreatedAt
             });
         }
     }

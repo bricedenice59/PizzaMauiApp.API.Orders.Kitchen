@@ -7,11 +7,10 @@ namespace PizzaMaui.API.Orders.Kitchen.StateMachines
         SagaStateMachineInstance 
     {
         public int CurrentState { get; set; }
-
         public Guid CorrelationId { get; set; }
-        
         public Guid OrderId { get; set; }
         public Guid UserId { get; set; }
+        public DateTime CreatedAt { get; set; }
         public List<IOrderItem> Items { get; set; } = new();
     }
 }
